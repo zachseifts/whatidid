@@ -5,4 +5,9 @@ year=$(date +%Y)
 updates=/Users/$(whoami)/Dropbox/.whatidid/updates/$year
 file=$updates/$week.md
 
-more $file
+while read line; do
+  created=$(echo $line | cut -d: -f1)
+  message=$(echo $line | cut -d: -f2)
+  echo $(date -r $created +'%Y/%m/%d/%H:%M:%S') $message
+done < $file
+
