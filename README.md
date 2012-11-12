@@ -20,8 +20,8 @@ Clone, download, or whatever and add the bin folder to your $PATH.
 ### Viewing your statuses
 
     $ wid-update-show
-    Monday 11 12 2012 1352734064: This is my status
-    Monday 11 12 2012 1352736758: Did something 
+    2012/11/12/10:27:44 This is my status
+    2012/11/12/11:12:38 Did something
 
 ### Emailing your weekly log to someone
 
