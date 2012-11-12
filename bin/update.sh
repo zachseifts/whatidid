@@ -21,5 +21,5 @@ then
   touch $file
 fi
 
-echo "$(date +%A) $(date +%m) $(date +%d) $(date +%Y): $1" >> $file
+echo "$(date +%A) $(date +%m) $(date +%d) $(date +%Y) $(date +%s): $1" >> $file
 
