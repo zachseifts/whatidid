@@ -8,6 +8,6 @@ file=$updates/$week.md
 while read line; do
   created=$(echo $line | cut -d: -f1)
   message=$(echo $line | cut -d: -f2)
-  echo $(date -r $created +'%Y/%m/%d-%H:%M:%S') $message
+  echo $(date -r $created +'%A (%m/%d/%Y)')':' $message
 done < $file
 
