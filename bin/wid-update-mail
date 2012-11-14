@@ -1,15 +1,22 @@
 #!/bin/bash
 
-if [ $# -ne 1 ];
+if [ -z "$1" ];
 then
   echo "usage: mail.sh user@example.com"
+  exit 1
 fi
 
+scripts=${0%\/bin\/*}
 week=$(date +%V)
 year=$(date +%Y)
 updates=/Users/$(whoami)/Dropbox/.whatidid/updates/$year
 file=$updates/$week.md
 subject="Weekly Update: $(date +"%A %B %d, %Y")"
+message=/tmp/wid-update-mail-message
 
-/usr/bin/mail -s "$subject" $1 < $file
+rm $message
+echo "Week of $(date +"%A %B %d, %Y")" > $message
+$scripts/bin/wid-update-show >> $message
 
+/usr/bin/mail -s "$subject" $1 < $message
+rm $message
