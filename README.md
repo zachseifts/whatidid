@@ -15,11 +15,11 @@ Clone, download, or whatever and add the bin folder to your $PATH.
 
 ### Updating your status
 
-    $ wid-update "This is my status"
+    $ wid update "This is my status"
 
 ### Viewing your statuses
 
-    $ wid-update-show
+    $ wid update-show
     2012/11/12/10:27:44 This is my status
     2012/11/12/11:12:38 Did something
 
