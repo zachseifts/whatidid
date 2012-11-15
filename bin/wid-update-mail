@@ -14,9 +14,7 @@ file=$updates/$week.md
 subject="Weekly Update: $(date +"%A %B %d, %Y")"
 message=/tmp/wid-update-mail-message
 
-rm $message
 echo "Week of $(date +"%A %B %d, %Y")" > $message
-$scripts/bin/wid-update-show >> $message
-
+$scripts/bin/wid update-show >> $message
 /usr/bin/mail -s "$subject" $1 < $message
 rm $message
