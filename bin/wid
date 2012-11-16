@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+
+from os import path, makedirs
+from getpass import getuser
+from datetime import datetime
+from time import time
+from argparse import ArgumentParser
+
+class NoMessageException(Exception): pass
+class NoRecipientException(Exception): pass
+class DropboxNotInstalledException(Exception): pass
+
+class Main(object):
+
+    def __init__(self, **kwargs):
+        self.command = kwargs.get('command', 'notfound');
+        self.message = kwargs.get('message', None)
+        self.recipient = kwargs.get('recipient', None)
+
+        if self.command == 'update': 
+            self.command_update()
+            pass
+
+        if self.command == 'update-show':
+            self.command_update_show()
+            pass
+
+        if self.command == 'update-mail':
+            self.command_update_mail()
+            pass
+
+    def get_data_path(self, key):
+        year, week, weekday = datetime.now().isocalendar()
+        dropbox = '/Users/%s/Dropbox' % (getuser());
+        if not path.exists(dropbox):
+            raise DropboxNotInstalledException('Dropbox path does not exist.')
+        wid_dir = '%s/.whatidid' % (dropbox)
+        if not path.exists(wid_dir):
+            makedirs(wid_dir)
+        data_dir = '%s/%s/%d' % (wid_dir, key, year)
+        if not path.exists(data_dir):
+            mkdirs(data_dir)
+        data_path = '%s/%d.md' % (data_dir, week)
+        if not path.exists(data_path):
+            updates = open(data_path, 'w+')
+            updates.write('')
+            updates.close()
+        return data_path
+
+    def command_update(self):
+        data_path = self.get_data_path('updates')
+        if self.message:
+            f = open(data_path, 'a')
+            f.write("%d:%s\n" % (int(time()), self.message))
+            f.close()
+        else:
+            raise NoMessageException('No message specified')
+
+    def command_update_show(self, printed=True):
+        data_path = self.get_data_path('updates')
+        updates = open(data_path, 'rb')
+        for line in updates:
+            timestamp, message = line.rstrip().split(':');
+            print "%s: %s" % (datetime.fromtimestamp(int(timestamp)).strftime('%A'), message)
+        updates.close();
+
+    def command_update_mail(self):
+        if self.recipient:
+            print 'messaged'
+        else:
+            raise NoRecipientException('No recipient specified')
+
+
+if __name__ == '__main__':
+    parser = ArgumentParser(description=u'Keeping track of what you did this week')
+    parser.add_argument('command', metavar='COMMAND', type=str,
+        help=u'A command, ie: update, update-show, update-mail')
+    parser.add_argument('-m', '--message', type=str, metavar='"A message"', help=u'A message')
+    parser.add_argument('-r', '--recipient', type=str, metavar='user@example.com', help=u'An email address the log should be sent to.')
+    args = parser.parse_args()
+
+    main = Main(command=args.command,
+                message=args.message,
+                recipient=args.recipient)
+
