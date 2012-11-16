@@ -16,7 +16,9 @@ class Main(object):
         self.command = kwargs.get('command', 'notfound');
         self.message = kwargs.get('message', None)
         self.recipient = kwargs.get('recipient', None)
+        self.run_command()
 
+    def run_command(self):
         if self.command == 'update': 
             self.command_update()
             pass
