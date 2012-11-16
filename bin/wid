@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import smtplib
-from email.mime.text import MIMEText
 from os import path, makedirs
 from getpass import getuser
 from datetime import datetime
