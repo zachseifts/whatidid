@@ -19,17 +19,10 @@ class Main(object):
         self.run_command()
 
     def run_command(self):
-        if self.command == 'update': 
-            self.command_update()
-            pass
-
-        if self.command == 'update-show':
-            self.command_update_show()
-            pass
-
-        if self.command == 'update-mail':
-            self.command_update_mail()
-            pass
+        try:
+            getattr(self, 'command_' + self.command.replace('-','_'))()
+        except AttributeError:
+            print 'That command does not exist'
 
     def get_data_path(self, key):
         year, week, weekday = datetime.now().isocalendar()
