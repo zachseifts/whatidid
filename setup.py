@@ -8,5 +8,6 @@ setup(name='whatidid',
       author_email='zach.seifts@gmail.com',
       license='MIT',
       packages=['whatidid'],
-      zip_safe=False)
+      zip_safe=False,
+      scripts=['bin/wid', 'bin/wid-update-mail'])
 
