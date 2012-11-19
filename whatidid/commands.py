@@ -5,8 +5,6 @@ from datetime import datetime
 from time import time
 from ConfigParser import ConfigParser, RawConfigParser
 
-class DropboxNotInstalledException(Exception): pass
-
 class Command(object):
     ''' A base class for a command.
 
@@ -58,9 +56,9 @@ class Command(object):
         data.close()
         return return_data;
 
-
     def run(self):
         raise NotImplementedError('The run() function is not implemented.')
+
 
 class InitCommand(Command):
     ''' Implements a command for setting everything up
