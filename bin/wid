@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 
-from os import path, makedirs
-from getpass import getuser
-from datetime import datetime
-from time import time
 from argparse import ArgumentParser
-from subprocess import check_call, CalledProcessError
 
-class NoMessageException(Exception): pass
-class NoRecipientException(Exception): pass
-class DropboxNotInstalledException(Exception): pass
+from whatidid import commands
 
 class Main(object):
+    ''' Main class for whatidid (wid).
+
+    A plain text way of remembering what you did
+    '''
 
     def __init__(self, **kwargs):
         self.command = kwargs.get('command', 'notfound');
@@ -22,62 +19,13 @@ class Main(object):
         except AttributeError:
             print 'That command does not exist'
 
-    def get_data_path(self, key):
-        year, week, weekday = datetime.now().isocalendar()
-        dropbox = '/Users/%s/Dropbox' % (getuser());
-        if not path.exists(dropbox):
-            raise DropboxNotInstalledException('Dropbox path does not exist.')
-        wid_dir = '%s/.whatidid' % (dropbox)
-        if not path.exists(wid_dir):
-            makedirs(wid_dir)
-        data_dir = '%s/%s/%d' % (wid_dir, key, year)
-        if not path.exists(data_dir):
-            mkdirs(data_dir)
-        data_path = '%s/%d.md' % (data_dir, week)
-        if not path.exists(data_path):
-            updates = open(data_path, 'w+')
-            updates.write('')
-            updates.close()
-        return data_path
-
-    def get_data(self, key):
-        data_path = self.get_data_path(key)
-        data = open(data_path, 'rb')
-        return_data = [line.rstrip() for line in data]
-        data.close()
-        return return_data;
-
     def command_update(self):
-        data_path = self.get_data_path('updates')
-        if self.message:
-            f = open(data_path, 'a')
-            f.write("%d:%s\n" % (int(time()), self.message))
-            f.close()
-        else:
-            raise NoMessageException('No message specified')
+        command = commands.UpdateCommand(message=self.message)
+        command.run()
 
-    def command_update_show(self, printed=True):
-        for line in self.get_data('updates'):
-            timestamp, message = line.split(':');
-            print "%s: %s" % (datetime.fromtimestamp(int(timestamp)).strftime('%A'), message)
-
-    def command_update_mail(self):
-        if self.recipient:
-            subject = 'Weekly Update: %s' % (datetime.now().strftime('%A %B %d, %Y'),)
-            from_addy = 'noreply@appstate.edu'
-            tmp_message = '/tmp/wid_command_update_mail.%d' % (int(time()),)
-            f = open(tmp_message, 'wb')
-            f.write('# ' + subject + "\n\n")
-            for line in self.get_data('updates'):
-                timestamp, message = line.split(':');
-                f.write(" - %s: %s\n" % (datetime.fromtimestamp(int(timestamp)).strftime('%A'), message))
-            f.close()
-           #try:
-           #    ret = check_call(['/usr/bin/mail', '-s "%s"' % (subject,), self.recipient, ' < %s' % (tmp_message,)])
-           #except CalledProcessError:
-           #    print 'could not send message'
-        else:
-            raise NoRecipientException('No recipient specified')
+    def command_update_show(self):
+        command = commands.UpdateShowCommand()
+        command.run()
 
 
 if __name__ == '__main__':
@@ -85,7 +33,6 @@ if __name__ == '__main__':
     parser.add_argument('command', metavar='COMMAND', type=str,
         help=u'A command, ie: update, update-show, update-mail')
     parser.add_argument('-m', '--message', type=str, metavar='"A message"', help=u'A message')
-    parser.add_argument('-r', '--recipient', type=str, metavar='user@example.com', help=u'An email address the log should be sent to.')
     args = parser.parse_args()
     main = Main(command=args.command,
                 message=args.message,

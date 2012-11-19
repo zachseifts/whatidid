@@ -1,9 +1,10 @@
 # whatidid
 
-Keeping track of things you've done on the command line, in plain text.
+Keeping track of things you've done on your Dropbox by command line.
 
 ## Requirements
 
+ - Python 2.7
  - OSX or Linux
  - Dropbox (optional, you can change the path of the data in the script)
 
@@ -11,17 +12,19 @@ Keeping track of things you've done on the command line, in plain text.
 
 Clone, download, or whatever and add the bin folder to your $PATH.
 
+    pip install whatidid
+
 ## Usage
 
 ### Updating your status
 
-    $ wid update "This is my status"
+    $ wid update -m "This is my status"
 
 ### Viewing your statuses
 
     $ wid update-show
-    2012/11/12/10:27:44 This is my status
-    2012/11/12/11:12:38 Did something
+    Monday: This is my status
+    Tuesday: Did something
 
 ### Emailing your weekly log to someone
 
