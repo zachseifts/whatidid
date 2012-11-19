@@ -6,7 +6,7 @@
 What I did (whatidid) documentation
 ===================================
 
-Keeping track of things you've done on your Dropbox by command line.
+A minimalist command line app that helps you keep track of what you did this week.
 
 Install
 =======

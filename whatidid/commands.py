@@ -3,7 +3,7 @@ from os import path, makedirs
 from getpass import getuser
 from datetime import datetime
 from time import time
-from ConfigParser import ConfigParser, RawConfigParser
+from ConfigParser import ConfigParser, RawConfigParser, NoSectionError
 
 class Command(object):
     ''' A base class for creating commands to work with the whatidid project
@@ -35,8 +35,14 @@ class Command(object):
         configrc = '%s/.widrc' % (path.expanduser('~'))
         config = ConfigParser()
         config.read(configrc)
-        self.storage_path = config.get('storage', 'path', default_storage_path)
-        self.update_show_format = config.get('formats', 'update-show-format', '%Y')
+        try:
+            self.storage_path = config.get('storage', 'path', default_storage_path)
+        except NoSectionError:
+            self.storage_path = default_storage_path
+        try:
+            self.update_show_format = config.get('formats', 'update-show-format', '%Y')
+        except NoSectionError:
+            self.update_show_format = '%Y'
 
     def get_data_path(self, key):
         year, week, weekday = datetime.now().isocalendar()
