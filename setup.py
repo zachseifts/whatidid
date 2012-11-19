@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='whatidid',
-      version='1.3',
+      version='1.4',
       description='Keep track of your life',
       classifiers=[
         'Development Status :: 3 - Alpha',
