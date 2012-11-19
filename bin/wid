@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from argparse import ArgumentParser
+from getpass import getuser
+from os import path
 
 from whatidid import commands
 
@@ -11,12 +13,19 @@ class Main(object):
     '''
 
     def __init__(self, **kwargs):
+        if not path.exists('%s/.widrc' % (path.expanduser('~'))):
+            print u'wid is not setup properly, you should run: wid init'
+            exit(1)
         self.command = kwargs.get('command', 'notfound');
         self.message = kwargs.get('message', None)
         try:
             getattr(self, 'command_' + self.command.replace('-','_'))()
         except AttributeError:
-            print 'That command does not exist'
+            print u'That command does not exist'
+
+    def command_init(self):
+        command = commands.InitCommand()
+        command.run()
 
     def command_update(self):
         command = commands.UpdateCommand(message=self.message)
@@ -25,6 +34,10 @@ class Main(object):
     def command_update_show(self):
         command = commands.UpdateShowCommand()
         command.run()
+
+    def command_notfound(self):
+        print u'The command was not found'
+        exit(1);
 
 
 if __name__ == '__main__':

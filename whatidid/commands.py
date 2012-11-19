@@ -3,6 +3,7 @@ from os import path, makedirs
 from getpass import getuser
 from datetime import datetime
 from time import time
+from ConfigParser import ConfigParser, RawConfigParser
 
 class DropboxNotInstalledException(Exception): pass
 
@@ -29,19 +30,20 @@ class Command(object):
     '''
 
     def __init__(self, **kwargs):
-        pass
+        default_storage_path = '%s/Dropbox/.whatidid' % (path.expanduser('~'))
+        configrc = '%s/.widrc' % (path.expanduser('~'))
+        if path.exists(configrc):
+            config = ConfigParser()
+            config.read(configrc)
+            self.storage_path = config.get('storage', 'path', default_storage_path)
+        else:
+            self.storage_path = default_storage_path
 
     def get_data_path(self, key):
         year, week, weekday = datetime.now().isocalendar()
-        dropbox = '/Users/%s/Dropbox' % (getuser());
-        if not path.exists(dropbox):
-            raise DropboxNotInstalledException('Dropbox path does not exist.')
-        wid_dir = '%s/.whatidid' % (dropbox)
-        if not path.exists(wid_dir):
-            makedirs(wid_dir)
-        data_dir = '%s/%s/%d' % (wid_dir, key, year)
+        data_dir = '%s/%s/%d' % (self.storage_path, key, year)
         if not path.exists(data_dir):
-            mkdirs(data_dir)
+            makedirs(data_dir)
         data_path = '%s/%d.md' % (data_dir, week)
         if not path.exists(data_path):
             updates = open(data_path, 'w+')
@@ -60,6 +62,24 @@ class Command(object):
     def run(self):
         raise NotImplementedError('The run() function is not implemented.')
 
+class InitCommand(Command):
+    ''' Implements a command for setting everything up
+    '''
+
+    def __init__(self, **kwargs):
+        super(InitCommand, self).__init__(**kwargs)
+
+    def run(self):
+        configrc = '%s/.widrc' % (path.expanduser('~'))
+        default_storage_path = '%s/Dropbox/.whatidid' % (path.expanduser('~'))
+        if not path.exists(configrc):
+            print u'There is no ~/.widrc file, createing one.'
+            config = RawConfigParser()
+            config.add_section('storage')
+            config.set('storage', 'path', default_storage_path)
+            with open(configrc, 'wb') as configfile:
+                config.write(configfile)
+
 
 class UpdateCommand(Command):
     ''' Implements a class for the update command.
@@ -67,7 +87,7 @@ class UpdateCommand(Command):
 
     def __init__(self, **kwargs):
         self.message = kwargs.get('message', None)
-        super(UpdateCommand, self).__init__()
+        super(UpdateCommand, self).__init__(**kwargs)
 
     def run(self):
         data_path = self.get_data_path('updates')
@@ -76,12 +96,15 @@ class UpdateCommand(Command):
             f.write("%d:%s\n" % (int(time()), self.message))
             f.close()
         else:
-            print 'No message specified'
+            print u'No message specified'
             exit(1)
 
 class UpdateShowCommand(Command):
     ''' Implements a class for the update-show command.
     '''
+
+    def __init__(self, **kwargs):
+        super(UpdateShowCommand, self).__init__(**kwargs)
 
     def run(self):
         for line in self.get_data('updates'):
