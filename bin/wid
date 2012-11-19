@@ -33,7 +33,6 @@ if __name__ == '__main__':
         help=u'A command, ie: update, update-show, update-mail')
     parser.add_argument('-m', '--message', type=str, metavar='"A message"', help=u'A message')
     args = parser.parse_args()
-
     main = Main(command=args.command,
                 message=args.message)
 

@@ -1,13 +1,8 @@
 from setuptools import setup
 
-def readme():
-    with open('README.md') as f:
-        return f.read()
-
 setup(name='whatidid',
-      version='1.1',
+      version='1.3',
       description='Keep track of your life',
-      long_description=readme(),
       classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
