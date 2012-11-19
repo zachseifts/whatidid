@@ -12,6 +12,9 @@ class Command(object):
 
         >>> from whatidid.commands import Command
         >>> class MyCommand(Command):
+        >>> def __init__(self, **kwargs):
+        >>>     self.thing = 'foo'
+        >>>     super(MyCommand, self).__init__(**kwargs)
         >>> def run(self):
         >>>     print 'ran the command'
         >>> command = MyCommand()
@@ -28,7 +31,7 @@ class Command(object):
     '''
 
     def __init__(self, **kwargs):
-        default_storage_path = '%s/Dropbox/.whatidid' % (path.expanduser('~'))
+        default_storage_path = '%s/.whatidid' % (path.expanduser('~'))
         configrc = '%s/.widrc' % (path.expanduser('~'))
         if path.exists(configrc):
             config = ConfigParser()
@@ -69,7 +72,7 @@ class InitCommand(Command):
 
     def run(self):
         configrc = '%s/.widrc' % (path.expanduser('~'))
-        default_storage_path = '%s/Dropbox/.whatidid' % (path.expanduser('~'))
+        default_storage_path = '%s/.whatidid' % (path.expanduser('~'))
         if not path.exists(configrc):
             print u'There is no ~/.widrc file, createing one.'
             config = RawConfigParser()
