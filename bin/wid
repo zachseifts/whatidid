@@ -13,15 +13,13 @@ class Main(object):
     '''
 
     def __init__(self, **kwargs):
-        if not path.exists('%s/.widrc' % (path.expanduser('~'))):
-            print u'wid is not setup properly, you should run: wid init'
-            exit(1)
         self.command = kwargs.get('command', 'notfound');
         self.message = kwargs.get('message', None)
-        try:
-            getattr(self, 'command_' + self.command.replace('-','_'))()
-        except AttributeError:
-            print u'That command does not exist'
+        if not self.command == 'init':
+            if not path.exists('%s/.widrc' % (path.expanduser('~'))):
+                print u'wid is not setup properly, you should run: wid init'
+                exit(1)
+        getattr(self, 'command_' + self.command.replace('-','_'))()
 
     def command_init(self):
         command = commands.InitCommand()

@@ -6,12 +6,15 @@ from time import time
 from ConfigParser import ConfigParser, RawConfigParser
 
 class Command(object):
-    ''' A base class for a command.
+    ''' A base class for creating commands to work with the whatidid project
 
     Subclass this class to generate a command:
 
         >>> from whatidid.commands import Command
         >>> class MyCommand(Command):
+        >>> def __init__(self, **kwargs):
+        >>>     self.thing = 'foo'
+        >>>     super(MyCommand, self).__init__(**kwargs)
         >>> def run(self):
         >>>     print 'ran the command'
         >>> command = MyCommand()
@@ -28,14 +31,12 @@ class Command(object):
     '''
 
     def __init__(self, **kwargs):
-        default_storage_path = '%s/Dropbox/.whatidid' % (path.expanduser('~'))
+        default_storage_path = '%s/.whatidid' % (path.expanduser('~'))
         configrc = '%s/.widrc' % (path.expanduser('~'))
-        if path.exists(configrc):
-            config = ConfigParser()
-            config.read(configrc)
-            self.storage_path = config.get('storage', 'path', default_storage_path)
-        else:
-            self.storage_path = default_storage_path
+        config = ConfigParser()
+        config.read(configrc)
+        self.storage_path = config.get('storage', 'path', default_storage_path)
+        self.update_show_format = config.get('formats', 'update-show-format', '%Y')
 
     def get_data_path(self, key):
         year, week, weekday = datetime.now().isocalendar()
@@ -44,16 +45,14 @@ class Command(object):
             makedirs(data_dir)
         data_path = '%s/%d.md' % (data_dir, week)
         if not path.exists(data_path):
-            updates = open(data_path, 'w+')
-            updates.write('')
-            updates.close()
+            with open(data_path, 'w+') as updates:
+                updates.write('')
         return data_path
 
     def get_data(self, key):
         data_path = self.get_data_path(key)
-        data = open(data_path, 'rb')
-        return_data = [line.rstrip() for line in data]
-        data.close()
+        with open(data_path, 'rb') as data:
+            return_data = [line.rstrip() for line in data]
         return return_data;
 
     def run(self):
@@ -69,12 +68,14 @@ class InitCommand(Command):
 
     def run(self):
         configrc = '%s/.widrc' % (path.expanduser('~'))
-        default_storage_path = '%s/Dropbox/.whatidid' % (path.expanduser('~'))
+        default_storage_path = '%s/.whatidid' % (path.expanduser('~'))
         if not path.exists(configrc):
             print u'There is no ~/.widrc file, createing one.'
             config = RawConfigParser()
             config.add_section('storage')
             config.set('storage', 'path', default_storage_path)
+            config.add_section('formats')
+            config.set('formats', 'update-show-format', '%A')
             with open(configrc, 'wb') as configfile:
                 config.write(configfile)
 
@@ -90,9 +91,8 @@ class UpdateCommand(Command):
     def run(self):
         data_path = self.get_data_path('updates')
         if self.message:
-            f = open(data_path, 'a')
-            f.write("%d:%s\n" % (int(time()), self.message))
-            f.close()
+            with open(data_path, 'a') as f:
+                f.write("%d:%s\n" % (int(time()), self.message))
         else:
             print u'No message specified'
             exit(1)
@@ -107,5 +107,5 @@ class UpdateShowCommand(Command):
     def run(self):
         for line in self.get_data('updates'):
             timestamp, message = line.split(':');
-            print "%s: %s" % (datetime.fromtimestamp(int(timestamp)).strftime('%A'), message)
+            print "%s: %s" % (datetime.fromtimestamp(int(timestamp)).strftime(self.update_show_format), message)
 
