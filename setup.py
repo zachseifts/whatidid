@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(name='whatidid',
-      version='1.1',
+      version='1.2',
       description='Keep track of your life',
       long_description=readme(),
       classifiers=[
