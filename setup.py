@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(name='whatidid',
-      version='1.5.2',
+      version='1.5.3',
       description='Keep track of your life',
-      long_description='Keep track of your life and what not with this awesome little script',
+      long_description='Keep track of things you did with this little app.',
       classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
