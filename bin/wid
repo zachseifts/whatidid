@@ -5,6 +5,7 @@ from getpass import getuser
 from datetime import datetime
 from time import time
 from argparse import ArgumentParser
+from subprocess import check_call, CalledProcessError
 
 class Main(object):
     ''' Main class for whatidid (wid).
@@ -66,9 +67,19 @@ class Main(object):
 
     def command_update_mail(self):
         if self.recipient:
-            updates = self.get_data('updates')
-            print updates.join("\n")
-            print 'messaged'
+            subject = 'Weekly Update: %s' % (datetime.now().strftime('%A %B %d, %Y'),)
+            from_addy = 'noreply@appstate.edu'
+            tmp_message = '/tmp/wid_command_update_mail.%d' % (int(time()),)
+            f = open(tmp_message, 'wb')
+            f.write('# ' + subject + "\n\n")
+            for line in self.get_data('updates'):
+                timestamp, message = line.split(':');
+                f.write(" - %s: %s\n" % (datetime.fromtimestamp(int(timestamp)).strftime('%A'), message))
+            f.close()
+           #try:
+           #    ret = check_call(['/usr/bin/mail', '-s "%s"' % (subject,), self.recipient, ' < %s' % (tmp_message,)])
+           #except CalledProcessError:
+           #    print 'could not send message'
         else:
             print 'No recipient specified'
             exit 1
