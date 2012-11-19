@@ -8,6 +8,24 @@ class DropboxNotInstalledException(Exception): pass
 
 class Command(object):
     ''' A base class for a command.
+
+    Subclass this class to generate a command:
+
+        >>> from whatidid.commands import Command
+        >>> class MyCommand(Command):
+        >>> def run(self):
+        >>>     print 'ran the command'
+        >>> command = MyCommand()
+        >>> command.run()
+        ran the command
+
+    Get the path of the data file and if it does not exist it will create it:
+
+        >>> from whatidid.commands import Command
+        >>> command = Command()
+        >>> command.get_data_path('foo')
+        /Users/user/Dropbox/.whatidid/foo/2012/34.md
+
     '''
 
     def __init__(self, **kwargs):
