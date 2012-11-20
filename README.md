@@ -40,7 +40,7 @@ Note: This will be moved into the `wid` command soonish.
 
 All of the configuration options live in the `~/.widrc` file.
 
-### The [storage] category
+### [storage]
 
 #### path
 
@@ -50,7 +50,7 @@ Example:
 
     path = /Users/foo/Dropbox/.whatidid
 
-### The [formats] category
+### [formats]
 
 #### update-show-format
 
