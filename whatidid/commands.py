@@ -35,21 +35,22 @@ class Command(object):
     '''
 
     def __init__(self, **kwargs):
-        default_storage_path = '%s/.whatidid' % (path.expanduser('~'))
         configrc = '%s/.widrc' % (path.expanduser('~'))
         config = ConfigParser()
         config.read(configrc)
         try:
-            self.storage_path = config.get('storage', 'path', default_storage_path)
+            storage_path = config.get('storage', 'path', path.expanduser('~'))
         except NoSectionError:
-            self.storage_path = default_storage_path
+            storage_path = path.expanduser('~')
+        self.storage_path = '%s/.whatidid' % (storage_path,)
         try:
             self.update_show_format = config.get('formats', 'update-show-format', '%Y')
         except NoSectionError:
             self.update_show_format = '%Y'
 
-    def get_data_path(self, key):
-        year, week, weekday = datetime.now().isocalendar()
+    def get_data_path(self, key, week=None):
+        year, current_week, weekday = datetime.now().isocalendar()
+        if week is None: week = current_week
         data_dir = '%s/%s/%d' % (self.storage_path, key, year)
         if not path.exists(data_dir):
             makedirs(data_dir)
@@ -72,12 +73,11 @@ class InitCommand(Command):
 
     def run(self):
         configrc = '%s/.widrc' % (path.expanduser('~'))
-        default_storage_path = '%s/.whatidid' % (path.expanduser('~'))
         if not path.exists(configrc):
             print u'There is no ~/.widrc file, createing one.'
             config = RawConfigParser()
             config.add_section('storage')
-            config.set('storage', 'path', default_storage_path)
+            config.set('storage', 'path', path.expanduser('~'))
             config.add_section('formats')
             config.set('formats', 'update-show-format', '%A')
             with open(configrc, 'wb') as configfile:
@@ -124,10 +124,15 @@ class UpdateShowCommand(Command):
     '''
 
     def __init__(self, **kwargs):
+        year, current_week, weekday = datetime.now().isocalendar()
+        week = kwargs.get('week', None)
+        if week is None:
+            week = current_week
+        self.week = int(week)
         super(UpdateShowCommand, self).__init__(**kwargs)
 
     def run(self):
-        data_path = self.get_data_path('updates')
+        data_path = self.get_data_path('updates', self.week)
         try:
             with open(data_path, 'rb') as fp:
                 existing_data = json.load(fp)
