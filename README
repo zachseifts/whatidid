@@ -13,7 +13,6 @@ You can install wid with either pip or easy_install, I perfer to use pip.
 
     $ pip install whatidid
 
-
 ## Getting started
 
 You will need to initialize the `~/.widrc` file and get your database
@@ -25,7 +24,7 @@ structure setup before you can use the application.
 
 You can update your updates by using `wid update` command:
 
-    $ wid update -m "This is my status"
+    $ wid update -m "This is my status" -t tag1,tag2,tag3
 
 You can list all of your updates by using the `wid update-show` command:
 
@@ -65,7 +64,7 @@ Example:
 
     update-show-format = %m/%d/%Y
 
-    wid update-show                                                                                  18 ↵
+    $ wid update-show
     11/18/2012: Did something
     11/19/2012: Did something else
 

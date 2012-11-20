@@ -92,13 +92,14 @@ class UpdateCommand(Command):
 
     def __init__(self, **kwargs):
         self.message = kwargs.get('message', None)
+        self.tags = kwargs.get('tags', [])
         super(UpdateCommand, self).__init__(**kwargs)
 
     def run(self):
         data_path = self.get_data_path('updates')
         if self.message:
             with open(data_path, 'a') as f:
-                f.write("%d:%s\n" % (int(time()), self.message))
+                f.write("%d:%s:%s\n" % (int(time()), ','.join(self.tags), self.message))
         else:
             print u'No message specified'
             exit(1)
@@ -112,6 +113,6 @@ class UpdateShowCommand(Command):
 
     def run(self):
         for line in self.get_data('updates'):
-            timestamp, message = line.split(':');
+            timestamp, tags, message = line.split(':');
             print "%s: %s" % (datetime.fromtimestamp(int(timestamp)).strftime(self.update_show_format), message)
 
