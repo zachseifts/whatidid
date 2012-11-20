@@ -16,7 +16,7 @@ You can install wid with either pip or easy_install, I like pip:
 
 You will need to initialize the `~/.widrc` file and get your database structure setup before you can use the application.
 
-   $ wid init
+    $ wid init
 
 ## Commands
 
@@ -38,7 +38,7 @@ Note: This will be moved into the `wid` command soonish.
 
 ## Configuration
 
-All of the configuration options live in the `~/.widrc` file, you can edit those values to configure your instance of wid.
+All of the configuration options live in the `~/.widrc` file.
 
 ### The [storage] category
 
@@ -59,6 +59,8 @@ Defines how the date should be formated from the results of `wid updates-show`.
 Example:
 
     update-show-format = %m/%d/%Y
+
+On the command line:
 
     $ wid update-show
     11/18/2012: Did something

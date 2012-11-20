@@ -1,9 +1,9 @@
 from setuptools import setup
 
 setup(name='whatidid',
-      version='1.5.7',
-      description='A minimalist command line app that helps you keep track of what you did.',
-      long_description='A minimalist command line app that helps you keep track of what you did last week.',
+      version='1.5.8',
+      description='A minimalist command line app for life logging.',
+      long_description='An application that helps you log your life, see the github page for more info.',
       classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
