@@ -3,7 +3,7 @@ from os import path, makedirs
 from getpass import getuser
 from datetime import datetime
 from time import time
-from ConfigParser import ConfigParser, RawConfigParser
+from ConfigParser import ConfigParser, RawConfigParser, NoSectionError
 
 class Command(object):
     ''' A base class for creating commands to work with the whatidid project
@@ -35,8 +35,14 @@ class Command(object):
         configrc = '%s/.widrc' % (path.expanduser('~'))
         config = ConfigParser()
         config.read(configrc)
-        self.storage_path = config.get('storage', 'path', default_storage_path)
-        self.update_show_format = config.get('formats', 'update-show-format', '%Y')
+        try:
+            self.storage_path = config.get('storage', 'path', default_storage_path)
+        except NoSectionError:
+            self.storage_path = default_storage_path
+        try:
+            self.update_show_format = config.get('formats', 'update-show-format', '%Y')
+        except NoSectionError:
+            self.update_show_format = '%Y'
 
     def get_data_path(self, key):
         year, week, weekday = datetime.now().isocalendar()
@@ -86,13 +92,14 @@ class UpdateCommand(Command):
 
     def __init__(self, **kwargs):
         self.message = kwargs.get('message', None)
+        self.tags = kwargs.get('tags', [])
         super(UpdateCommand, self).__init__(**kwargs)
 
     def run(self):
         data_path = self.get_data_path('updates')
         if self.message:
             with open(data_path, 'a') as f:
-                f.write("%d:%s\n" % (int(time()), self.message))
+                f.write("%d:%s:%s\n" % (int(time()), ','.join(self.tags), self.message))
         else:
             print u'No message specified'
             exit(1)
@@ -106,6 +113,6 @@ class UpdateShowCommand(Command):
 
     def run(self):
         for line in self.get_data('updates'):
-            timestamp, message = line.split(':');
+            timestamp, tags, message = line.split(':');
             print "%s: %s" % (datetime.fromtimestamp(int(timestamp)).strftime(self.update_show_format), message)
 

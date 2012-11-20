@@ -15,6 +15,12 @@ class Main(object):
     def __init__(self, **kwargs):
         self.command = kwargs.get('command', 'notfound');
         self.message = kwargs.get('message', None)
+        tags = kwargs.get('tags', '')
+        if tags:
+            self.tags = tags.split(',')
+        else:
+            self.tags = []
+
         if not self.command == 'init':
             if not path.exists('%s/.widrc' % (path.expanduser('~'))):
                 print u'wid is not setup properly, you should run: wid init'
@@ -26,7 +32,7 @@ class Main(object):
         command.run()
 
     def command_update(self):
-        command = commands.UpdateCommand(message=self.message)
+        command = commands.UpdateCommand(message=self.message, tags=self.tags)
         command.run()
 
     def command_update_show(self):
@@ -43,7 +49,10 @@ if __name__ == '__main__':
     parser.add_argument('command', metavar='COMMAND', type=str,
         help=u'A command, ie: update, update-show, update-mail')
     parser.add_argument('-m', '--message', type=str, metavar='"A message"', help=u'A message')
+    parser.add_argument('-t', '--tags', type=str, metavar='tag1[,tag2,tag3]',
+        help=u'A tag or comma separated list of tags')
     args = parser.parse_args()
     main = Main(command=args.command,
-                message=args.message)
+                message=args.message,
+                tags=args.tags)
 
