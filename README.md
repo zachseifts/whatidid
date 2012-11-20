@@ -36,7 +36,7 @@ You can email someone by the `wid-update-mail` command:
 
 Note: This will be moved into the `wid` command soonish.
 
-## Advanced configuration
+## Configuration
 
 All of the configuration options live in the `~/.widrc` file, you can edit those values to configure your instance of wid.
 
