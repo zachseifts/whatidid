@@ -104,6 +104,7 @@ class UpdateCommand(Command):
             print u'No message specified'
             exit(1)
 
+
 class UpdateShowCommand(Command):
     ''' Implements a class for the update-show command.
     '''
@@ -114,5 +115,9 @@ class UpdateShowCommand(Command):
     def run(self):
         for line in self.get_data('updates'):
             timestamp, tags, message = line.split(':');
-            print "%s: %s" % (datetime.fromtimestamp(int(timestamp)).strftime(self.update_show_format), message)
+            out = "%s" % (datetime.fromtimestamp(int(timestamp)).strftime(self.update_show_format))
+            if tags:
+                print "%s: %s: %s" % (out, tags, message)
+            else:
+                print "%s: %s" % (out, message)
 
