@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='whatidid',
-      version='1.6.1',
+      version='1.6.2',
       description='A minimalist command line app for life logging.',
       long_description='An application that helps you log your life, see the github page for more info.',
       classifiers=[

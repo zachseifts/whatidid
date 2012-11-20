@@ -30,6 +30,13 @@ You can list all of your updates by using the `wid update-show` command:
     Monday: This is my status
     Tuesday: Did something
 
+You can list all of your updates from a specific week by using the `-w` flag:
+
+    $ wid update-show -w 46
+    Monday: I did this
+    Tuesday: tag1,tag2: This is what I did today
+    Tuesday: tag1: I did something else
+
 You can email someone by the `wid-update-mail` command:
 
     $ wid-update-mail user@example.com

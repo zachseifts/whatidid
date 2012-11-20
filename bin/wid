@@ -15,6 +15,7 @@ class Main(object):
     def __init__(self, **kwargs):
         self.command = kwargs.get('command', 'notfound');
         self.message = kwargs.get('message', None)
+        self.week = kwargs.get('week', None)
         tags = kwargs.get('tags', '')
         if tags:
             self.tags = tags.split(',')
@@ -36,7 +37,7 @@ class Main(object):
         command.run()
 
     def command_update_show(self):
-        command = commands.UpdateShowCommand()
+        command = commands.UpdateShowCommand(week=self.week)
         command.run()
 
     def command_notfound(self):
@@ -51,8 +52,10 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--message', type=str, metavar='"A message"', help=u'A message')
     parser.add_argument('-t', '--tags', type=str, metavar='tag1[,tag2,tag3]',
         help=u'A tag or comma separated list of tags')
+    parser.add_argument('-w', '--week', type=str, metavar='NN', help=u'A week number to display all events.')
     args = parser.parse_args()
     main = Main(command=args.command,
                 message=args.message,
-                tags=args.tags)
+                tags=args.tags,
+                week=args.week)
 

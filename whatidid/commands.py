@@ -48,8 +48,9 @@ class Command(object):
         except NoSectionError:
             self.update_show_format = '%Y'
 
-    def get_data_path(self, key):
-        year, week, weekday = datetime.now().isocalendar()
+    def get_data_path(self, key, week=None):
+        year, current_week, weekday = datetime.now().isocalendar()
+        if week is None: week = current_week
         data_dir = '%s/%s/%d' % (self.storage_path, key, year)
         if not path.exists(data_dir):
             makedirs(data_dir)
@@ -123,10 +124,15 @@ class UpdateShowCommand(Command):
     '''
 
     def __init__(self, **kwargs):
+        year, current_week, weekday = datetime.now().isocalendar()
+        week = kwargs.get('week', None)
+        if week is None:
+            week = current_week
+        self.week = int(week)
         super(UpdateShowCommand, self).__init__(**kwargs)
 
     def run(self):
-        data_path = self.get_data_path('updates')
+        data_path = self.get_data_path('updates', self.week)
         try:
             with open(data_path, 'rb') as fp:
                 existing_data = json.load(fp)
