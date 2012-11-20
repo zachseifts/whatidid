@@ -1,3 +1,6 @@
+
+import json
+
 from sys import exit
 from os import path, makedirs
 from getpass import getuser
@@ -49,17 +52,11 @@ class Command(object):
         data_dir = '%s/%s/%d' % (self.storage_path, key, year)
         if not path.exists(data_dir):
             makedirs(data_dir)
-        data_path = '%s/%d.md' % (data_dir, week)
+        data_path = '%s/%d.json' % (data_dir, week)
         if not path.exists(data_path):
-            with open(data_path, 'w+') as updates:
-                updates.write('')
+            with open(data_path, 'wb') as updates:
+                json.dump([], updates)
         return data_path
-
-    def get_data(self, key):
-        data_path = self.get_data_path(key)
-        with open(data_path, 'rb') as data:
-            return_data = [line.rstrip() for line in data]
-        return return_data;
 
     def run(self):
         raise NotImplementedError('The run() function is not implemented.')
@@ -97,9 +94,17 @@ class UpdateCommand(Command):
 
     def run(self):
         data_path = self.get_data_path('updates')
+
+        try:
+            with open(data_path, 'rb') as fp:
+                existing_data = json.load(fp)
+        except ValueError:
+            existing_data = []
+
         if self.message:
-            with open(data_path, 'a') as f:
-                f.write("%d:%s:%s\n" % (int(time()), ','.join(self.tags), self.message))
+            existing_data.append({'created': int(time()), 'tags': self.tags, 'message': self.message})
+            with open(data_path, 'wb') as fp:
+                data = json.dump(existing_data, fp, sort_keys=True, indent=4)
         else:
             print u'No message specified'
             exit(1)
@@ -113,11 +118,16 @@ class UpdateShowCommand(Command):
         super(UpdateShowCommand, self).__init__(**kwargs)
 
     def run(self):
-        for line in self.get_data('updates'):
-            timestamp, tags, message = line.split(':');
-            out = "%s" % (datetime.fromtimestamp(int(timestamp)).strftime(self.update_show_format))
-            if tags:
-                print "%s: %s: %s" % (out, tags, message)
-            else:
-                print "%s: %s" % (out, message)
+        data_path = self.get_data_path('updates')
+        try:
+            with open(data_path, 'rb') as fp:
+                existing_data = json.load(fp)
+                for update in existing_data:
+                    out = u'%s' % (datetime.fromtimestamp(int(update['created'])).strftime(self.update_show_format))
+                    if update['tags']:
+                        print u'%s: %s: %s' % (out, ','.join(update['tags']), update['message'])
+                    else:
+                        print u'%s: %s' % (out, update['message'])
+        except ValueError:
+            print u'There are no messages.'
 
