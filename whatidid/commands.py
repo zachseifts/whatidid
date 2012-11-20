@@ -1,5 +1,6 @@
 
 import json
+import hashlib
 
 from sys import exit
 from os import path, makedirs
@@ -102,7 +103,15 @@ class UpdateCommand(Command):
             existing_data = []
 
         if self.message:
-            existing_data.append({'created': int(time()), 'tags': self.tags, 'message': self.message})
+            m = hashlib.md5()
+            created = int(time())
+            m.update(str(created) + self.message)
+            existing_data.append({
+                'id': m.hexdigest(),
+                'created': created,
+                'tags': self.tags,
+                'message': self.message}
+            )
             with open(data_path, 'wb') as fp:
                 data = json.dump(existing_data, fp, sort_keys=True, indent=4)
         else:
