@@ -35,14 +35,14 @@ class Command(object):
     '''
 
     def __init__(self, **kwargs):
-        default_storage_path = '%s/.whatidid' % (path.expanduser('~'))
         configrc = '%s/.widrc' % (path.expanduser('~'))
         config = ConfigParser()
         config.read(configrc)
         try:
-            self.storage_path = config.get('storage', 'path', default_storage_path)
+            storage_path = config.get('storage', 'path', path.expanduser('~'))
         except NoSectionError:
-            self.storage_path = default_storage_path
+            storage_path = path.expanduser('~')
+        self.storage_path = '%s/.whatidid' % (storage_path,)
         try:
             self.update_show_format = config.get('formats', 'update-show-format', '%Y')
         except NoSectionError:
@@ -72,12 +72,11 @@ class InitCommand(Command):
 
     def run(self):
         configrc = '%s/.widrc' % (path.expanduser('~'))
-        default_storage_path = '%s/.whatidid' % (path.expanduser('~'))
         if not path.exists(configrc):
             print u'There is no ~/.widrc file, createing one.'
             config = RawConfigParser()
             config.add_section('storage')
-            config.set('storage', 'path', default_storage_path)
+            config.set('storage', 'path', path.expanduser('~'))
             config.add_section('formats')
             config.set('formats', 'update-show-format', '%A')
             with open(configrc, 'wb') as configfile:
