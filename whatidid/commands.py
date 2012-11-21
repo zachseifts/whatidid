@@ -67,6 +67,15 @@ class Command(object):
         raise NotImplementedError('The run() function is not implemented.')
 
 
+class BaseUpdateCommand(Command):
+    ''' A base class for Update commands
+    '''
+
+    def __init__(self, **kwargs):
+        self.type = 'updates'
+        super(BaseUpdateCommand, self).__init__(**kwargs)
+
+
 class InitCommand(Command):
     ''' Implements a command for setting everything up.
     '''
@@ -87,7 +96,7 @@ class InitCommand(Command):
                 config.write(configfile)
 
 
-class UpdateCommand(Command):
+class UpdateCommand(BaseUpdateCommand):
     ''' Implements a class for the update command.
     '''
 
@@ -97,7 +106,7 @@ class UpdateCommand(Command):
         super(UpdateCommand, self).__init__(**kwargs)
 
     def run(self):
-        data_path = self.get_data_path('updates')
+        data_path = self.get_data_path(self.type)
 
         try:
             with open(data_path, 'rb') as fp:
@@ -122,7 +131,7 @@ class UpdateCommand(Command):
             exit(1)
 
 
-class UpdateShowCommand(Command):
+class UpdateShowCommand(BaseUpdateCommand):
     ''' Implements a class for the update-show command.
     '''
 
@@ -135,7 +144,7 @@ class UpdateShowCommand(Command):
         super(UpdateShowCommand, self).__init__(**kwargs)
 
     def run(self):
-        data_path = self.get_data_path('updates', self.week)
+        data_path = self.get_data_path(self.type, self.week)
         try:
             with open(data_path, 'rb') as fp:
                 existing_data = json.load(fp)
