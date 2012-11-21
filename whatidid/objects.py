@@ -77,6 +77,7 @@ class BaseTodoCommand(Command):
 
     def __init__(self, **kwargs):
         self.type = 'todo'
+        self.id = kwargs.get('id', '')
         super(BaseTodoCommand, self).__init__(**kwargs)
 
     def get_data_path(self, key, week=None):

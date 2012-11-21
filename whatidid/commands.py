@@ -131,7 +131,6 @@ class TodoShowCommand(BaseTodoCommand):
     '''
 
     def __init__(self, **kwargs):
-        self.id = kwargs.get('id', '')
         year, current_week, weekday = datetime.now().isocalendar()
         week = kwargs.get('week', None)
         if week is None:
