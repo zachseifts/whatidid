@@ -25,13 +25,6 @@ class Command(object):
         >>> command.run()
         ran the command
 
-    Get the path of the data file and if it does not exist it will create it:
-
-        >>> from whatidid.commands import Command
-        >>> command = Command()
-        >>> command.get_data_path('foo')
-        /Users/user/Dropbox/.whatidid/foo/2012/34.md
-
     '''
 
     def __init__(self, **kwargs):
@@ -49,6 +42,16 @@ class Command(object):
             self.update_show_format = '%Y'
 
     def get_data_path(self, key, week=None):
+        ''' Get the path of the data file for a key
+
+        Usage:
+
+        >>> from whatidid.commands import Command
+        >>> command = Command()
+        >>> command.get_data_path('foo')
+        /Users/user/Dropbox/.whatidid/foo/2012/34.md
+
+        '''
         year, current_week, weekday = datetime.now().isocalendar()
         if week is None: week = current_week
         data_dir = '%s/%s/%d' % (self.storage_path, key, year)
@@ -65,7 +68,7 @@ class Command(object):
 
 
 class InitCommand(Command):
-    ''' Implements a command for setting everything up
+    ''' Implements a command for setting everything up.
     '''
 
     def __init__(self, **kwargs):
