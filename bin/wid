@@ -63,7 +63,7 @@ if __name__ == '__main__':
          updates
 
           wid update\t\tAdd an update to your updates. -m is required, -t is optional
-          wid update-show\tLists all of your current updates.
+          wid update-show\tLists all of your current updates. -w is optional
 
          todos
 
