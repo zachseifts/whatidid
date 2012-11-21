@@ -1,71 +1,16 @@
-
 import json
 import hashlib
 
 from sys import exit
 from os import path, makedirs
-from getpass import getuser
 from datetime import datetime
 from time import time
-from ConfigParser import ConfigParser, RawConfigParser, NoSectionError
+from ConfigParser import RawConfigParser
 
-class Command(object):
-    ''' A base class for creating commands to work with the whatidid project
-
-    Subclass this class to generate a command:
-
-        >>> from whatidid.commands import Command
-        >>> class MyCommand(Command):
-        >>> def __init__(self, **kwargs):
-        >>>     self.thing = 'foo'
-        >>>     super(MyCommand, self).__init__(**kwargs)
-        >>> def run(self):
-        >>>     print 'ran the command'
-        >>> command = MyCommand()
-        >>> command.run()
-        ran the command
-
-    Get the path of the data file and if it does not exist it will create it:
-
-        >>> from whatidid.commands import Command
-        >>> command = Command()
-        >>> command.get_data_path('foo')
-        /Users/user/Dropbox/.whatidid/foo/2012/34.md
-
-    '''
-
-    def __init__(self, **kwargs):
-        configrc = '%s/.widrc' % (path.expanduser('~'))
-        config = ConfigParser()
-        config.read(configrc)
-        try:
-            storage_path = config.get('storage', 'path', path.expanduser('~'))
-        except NoSectionError:
-            storage_path = path.expanduser('~')
-        self.storage_path = '%s/.whatidid' % (storage_path,)
-        try:
-            self.update_show_format = config.get('formats', 'update-show-format', '%Y')
-        except NoSectionError:
-            self.update_show_format = '%Y'
-
-    def get_data_path(self, key, week=None):
-        year, current_week, weekday = datetime.now().isocalendar()
-        if week is None: week = current_week
-        data_dir = '%s/%s/%d' % (self.storage_path, key, year)
-        if not path.exists(data_dir):
-            makedirs(data_dir)
-        data_path = '%s/%d.json' % (data_dir, week)
-        if not path.exists(data_path):
-            with open(data_path, 'wb') as updates:
-                json.dump([], updates)
-        return data_path
-
-    def run(self):
-        raise NotImplementedError('The run() function is not implemented.')
-
+from whatidid.objects import Command, BaseUpdateCommand, BaseTodoCommand
 
 class InitCommand(Command):
-    ''' Implements a command for setting everything up
+    ''' Implements a command for setting everything up.
     '''
 
     def __init__(self, **kwargs):
@@ -84,7 +29,7 @@ class InitCommand(Command):
                 config.write(configfile)
 
 
-class UpdateCommand(Command):
+class UpdateCommand(BaseUpdateCommand):
     ''' Implements a class for the update command.
     '''
 
@@ -94,7 +39,7 @@ class UpdateCommand(Command):
         super(UpdateCommand, self).__init__(**kwargs)
 
     def run(self):
-        data_path = self.get_data_path('updates')
+        data_path = self.get_data_path(self.type)
 
         try:
             with open(data_path, 'rb') as fp:
@@ -119,7 +64,7 @@ class UpdateCommand(Command):
             exit(1)
 
 
-class UpdateShowCommand(Command):
+class UpdateShowCommand(BaseUpdateCommand):
     ''' Implements a class for the update-show command.
     '''
 
@@ -132,7 +77,7 @@ class UpdateShowCommand(Command):
         super(UpdateShowCommand, self).__init__(**kwargs)
 
     def run(self):
-        data_path = self.get_data_path('updates', self.week)
+        data_path = self.get_data_path(self.type, self.week)
         try:
             with open(data_path, 'rb') as fp:
                 existing_data = json.load(fp)
@@ -144,4 +89,62 @@ class UpdateShowCommand(Command):
                         print u'%s: %s' % (out, update['message'])
         except ValueError:
             print u'There are no messages.'
+
+
+class TodoCommand(BaseTodoCommand):
+    ''' Implements a class for the todo command.
+    '''
+
+    def __init__(self, **kwargs):
+        self.message = kwargs.get('message', None)
+        self.tags = kwargs.get('tags', [])
+        super(TodoCommand, self).__init__(**kwargs)
+
+    def run(self):
+        data_path = self.get_data_path(self.type)
+
+        try:
+            with open(data_path, 'rb') as fp:
+                existing_data = json.load(fp)
+        except ValueError:
+            existing_data = []
+
+        if self.message:
+            m = hashlib.md5()
+            created = int(time())
+            m.update(str(created) + self.message)
+            existing_data.append({
+                'id': m.hexdigest(),
+                'created': created,
+                'tags': self.tags,
+                'message': self.message}
+            )
+            with open(data_path, 'wb') as fp:
+                data = json.dump(existing_data, fp, sort_keys=True, indent=4)
+        else:
+            print u'No todo item specified'
+            exit(1)
+
+
+class TodoShowCommand(BaseTodoCommand):
+    ''' Impelments a class for the todo-show command.
+    '''
+
+    def __init__(self, **kwargs):
+        year, current_week, weekday = datetime.now().isocalendar()
+        week = kwargs.get('week', None)
+        if week is None:
+            week = current_week
+        self.week = int(week)
+        super(TodoShowCommand, self).__init__(**kwargs)
+
+    def run(self):
+        data_path = self.get_data_path(self.type, self.week)
+        try:
+            with open(data_path, 'rb') as fp:
+                existing_data = json.load(fp)
+                for update in existing_data:
+                    print u'%s: %s' % (update['id'], update['message'],)
+        except ValueError:
+            print u'There are no todo items.'
 

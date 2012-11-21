@@ -41,7 +41,17 @@ You can email someone by the `wid-update-mail` command:
 
     $ wid-update-mail user@example.com
 
-Note: This will be moved into the `wid` command soonish.
+__Note:__ This will be moved into the `wid` command soonish.
+
+You can item your todo by using `wid todo` command:
+
+    $ wid todo -m "This is what I need to do"
+
+You can list all of your todos by using the `wid todo-show` command:
+
+   $ wid todo-show
+   d7d30320a8663cc5c41fbf510fe2cd72: something i need to do
+   b39b4ffa530441de3b09c362942742ab: something else i need to do
 
 ## Configuration
 
