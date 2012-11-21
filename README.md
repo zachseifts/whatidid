@@ -12,6 +12,10 @@ You can install wid with either pip or easy_install, I like pip:
 
     $ pip install whatidid
 
+or:
+
+    $ pip install whatidid --upgrade
+
 ## Getting started
 
 You will need to initialize the `~/.widrc` file and get your database structure setup before you can use the application.
@@ -52,6 +56,11 @@ You can list all of your todos by using the `wid todo-show` command:
     $ wid todo-show
     d7d30320a8663cc5c41fbf510fe2cd72: something i need to do
     b39b4ffa530441de3b09c362942742ab: something else i need to do
+
+You can view a todo item by using the `wid todo-show -i` command:
+
+    $ wid todo-show -i b39b4ffa530441de3b09c362942742ab
+    something else i need to do
 
 ## Configuration
 

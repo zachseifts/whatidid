@@ -17,6 +17,7 @@ class Main(object):
         self.command = kwargs.get('command', 'notfound');
         self.message = kwargs.get('message', None)
         self.week = kwargs.get('week', None)
+        self.id = kwargs.get('id', None)
         tags = kwargs.get('tags', '')
         if tags:
             self.tags = tags.split(',')
@@ -46,7 +47,7 @@ class Main(object):
         command.run()
 
     def command_todo_show(self):
-        command = commands.TodoShowCommand(tags=self.tags)
+        command = commands.TodoShowCommand(tags=self.tags, id=self.id)
         command.run()
 
     def command_notfound(self):
@@ -68,7 +69,7 @@ if __name__ == '__main__':
          todos
 
           wid todo\t\tAdd an todo to your todos. -m is required, -t is optional.
-          wid todo-show\t\tLists all of your todos.
+          wid todo-show\t\tLists all of your todos. -i is optional.
 
     ''')
     parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, description=description)
@@ -78,9 +79,11 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--tags', type=str, metavar='tag1[,tag2,tag3]',
         help=u'A tag or comma separated list of tags')
     parser.add_argument('-w', '--week', type=str, metavar='NN', help=u'A week number to display all events.')
+    parser.add_argument('-i', '--id', type=str, help=u'The id of the item.')
     args = parser.parse_args()
     main = Main(command=args.command,
                 message=args.message,
                 tags=args.tags,
-                week=args.week)
+                week=args.week,
+                id=args.id)
 

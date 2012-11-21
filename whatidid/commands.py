@@ -131,6 +131,7 @@ class TodoShowCommand(BaseTodoCommand):
     '''
 
     def __init__(self, **kwargs):
+        self.id = kwargs.get('id', '')
         year, current_week, weekday = datetime.now().isocalendar()
         week = kwargs.get('week', None)
         if week is None:
@@ -140,11 +141,23 @@ class TodoShowCommand(BaseTodoCommand):
 
     def run(self):
         data_path = self.get_data_path(self.type, self.week)
-        try:
-            with open(data_path, 'rb') as fp:
-                existing_data = json.load(fp)
-                for update in existing_data:
-                    print u'%s: %s' % (update['id'], update['message'],)
-        except ValueError:
-            print u'There are no todo items.'
+        if self.id:
+            try:
+                with open(data_path, 'rb') as fp:
+                    existing_data = json.load(fp)
+                    result = [e for e in existing_data if e['id'] == self.id]
+                    if result:
+                        print u'%s' % (result[0]['message'],)
+                    else:
+                        print u'No todo item by that id'
+            except ValueError:
+                print u'Could not load the data file'
+        else:
+            try:
+                with open(data_path, 'rb') as fp:
+                    existing_data = json.load(fp)
+                    for update in existing_data:
+                        print u'%s: %s' % (update['id'], update['message'],)
+            except ValueError:
+                print u'There are no todo items.'
 
