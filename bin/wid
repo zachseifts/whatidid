@@ -40,6 +40,10 @@ class Main(object):
         command = commands.UpdateShowCommand(week=self.week)
         command.run()
 
+    def command_todo(self):
+        command = commands.TodoCommand(message=self.message, tags=self.tags)
+        command.run()
+
     def command_notfound(self):
         print u'The command was not found'
         exit(1);

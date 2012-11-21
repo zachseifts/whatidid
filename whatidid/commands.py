@@ -157,3 +157,38 @@ class UpdateShowCommand(BaseUpdateCommand):
         except ValueError:
             print u'There are no messages.'
 
+
+class TodoCommand(Command):
+    ''' Implements a class for the todo command.
+    '''
+
+    def __init__(self, **kwargs):
+        self.message = kwargs.get('message', None)
+        self.tags = kwargs.get('tags', [])
+        super(TodoCommand, self).__init__(**kwargs)
+
+    def run(self):
+        data_path = self.get_data_path('todo')
+
+        try:
+            with open(data_path, 'rb') as fp:
+                existing_data = json.load(fp)
+        except ValueError:
+            existing_data = []
+
+        if self.message:
+            m = hashlib.md5()
+            created = int(time())
+            m.update(str(created) + self.message)
+            existing_data.append({
+                'id': m.hexdigest(),
+                'created': created,
+                'tags': self.tags,
+                'message': self.message}
+            )
+            with open(data_path, 'wb') as fp:
+                data = json.dump(existing_data, fp, sort_keys=True, indent=4)
+        else:
+            print u'No todo item specified'
+            exit(1)
+
