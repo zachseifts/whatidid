@@ -49,9 +49,9 @@ You can item your todo by using `wid todo` command:
 
 You can list all of your todos by using the `wid todo-show` command:
 
-   $ wid todo-show
-   d7d30320a8663cc5c41fbf510fe2cd72: something i need to do
-   b39b4ffa530441de3b09c362942742ab: something else i need to do
+    $ wid todo-show
+    d7d30320a8663cc5c41fbf510fe2cd72: something i need to do
+    b39b4ffa530441de3b09c362942742ab: something else i need to do
 
 ## Configuration
 
